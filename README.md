@@ -80,7 +80,7 @@ Example web.config settings:
     </system.web>
 
 
-### replicasToWrite
+> replicasToWrite
 Interpreted as the number of replicas to write to, in addition to the primary (in a replicaset environment).
 
 
