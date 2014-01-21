@@ -1,4 +1,4 @@
-Quintsys.Web.Providers.MongoDBSessionStateStore
+Web.Providers.MongoDBSessionStateStore
 -----------------------------------------------
 
 MongoDB Session State Provider
