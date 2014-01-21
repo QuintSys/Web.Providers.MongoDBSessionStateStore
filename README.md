@@ -1,5 +1,5 @@
-Web.Providers.MongoDBSessionStateStore
-======================================
+Quintsys.Web.Providers.MongoDBSessionStateStore
+-----------------------------------------------
 
 MongoDB Session State Provider
 Custom ASP.NET Session State Provider using MongoDB as the state store.
