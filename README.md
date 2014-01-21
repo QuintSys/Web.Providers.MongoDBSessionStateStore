@@ -70,7 +70,7 @@ Example web.config settings:
             customProvider="MongoSessionStateProvider">
             <providers>
                 <add name="MongoSessionStateProvider"
-                    type="Quintsys.Web.Providers.MongoDBSessionStateStore"
+                    type="Quintsys.Web.Providers.MongoDBSessionStateStore.MongoDBSessionStateStoreProvider"
                     connectionStringName="MongoDBSessionState"
                     fsync="false"
                     replicasToWrite="0"
