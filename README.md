@@ -12,6 +12,16 @@ http://msdn.microsoft.com/en-us/library/ms178587.aspx
 http://msdn.microsoft.com/en-us/library/ms178588.aspx
 
 
+Installation
+------------
+
+To install Quintsys.Web.Providers.MongoDBSessionStateStore, run the following command in the Package Manager Console:
+
+    PM> Install-Package MongoDBSessionStateStore
+
+
+Document Example
+---------------
 
 Session state is stored in a "Sessions" collection within a "SessionState" database.      
 Example session document:
