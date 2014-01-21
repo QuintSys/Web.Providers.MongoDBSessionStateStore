@@ -4,13 +4,6 @@ Web.Providers.MongoDBSessionStateStore
 MongoDB Session State Provider
 Custom ASP.NET Session State Provider using MongoDB as the state store.
 
-Based on (read copied a lot from): 
-https://github.com/AdaTheDev/MongoDB-ASP.NET-Session-State-Store
-
-Reference:
-http://msdn.microsoft.com/en-us/library/ms178587.aspx
-http://msdn.microsoft.com/en-us/library/ms178588.aspx
-
 
 Installation
 ------------
@@ -95,3 +88,18 @@ Example web.config settings:
 
     replicasToWrite = 0, will wait for the response from writing to the primary node. 
     replicasToWrite > 0 will wait for the response having written to ({replicasToWrite} + 1) nodes
+    
+
+
+References:
+----------
+
+http://msdn.microsoft.com/en-us/library/ms178587.aspx
+
+http://msdn.microsoft.com/en-us/library/ms178588.aspx
+
+
+
+Based on (read copied a lot from): 
+
+https://github.com/AdaTheDev/MongoDB-ASP.NET-Session-State-Store
