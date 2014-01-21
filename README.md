@@ -80,8 +80,7 @@ Example web.config settings:
     </system.web>
 
 
-> replicasToWrite
-Interpreted as the number of replicas to write to, in addition to the primary (in a replicaset environment).
+> replicasToWrite: interpreted as the number of replicas to write to, in addition to the primary (in a replicaset environment).
 
 
     replicasToWrite = 0, will wait for the response from writing to the primary node. 
