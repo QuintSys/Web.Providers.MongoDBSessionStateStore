@@ -3,7 +3,6 @@ using System.Collections.Specialized;
 using System.Configuration;
 using System.Configuration.Provider;
 using System.Globalization;
-using System.IO;
 using System.Web;
 using System.Web.Configuration;
 using System.Web.SessionState;
@@ -51,7 +50,7 @@ namespace Quintsys.Web.Providers.MongoDBSessionStateStore
         private SessionStateSection GetSessionStateConfigurationElement()
         {
             Configuration webConfiguration = WebConfigurationManager.OpenWebConfiguration(_applicationName);
-            return (SessionStateSection)webConfiguration.GetSection("system.web/sessionState");
+            return (SessionStateSection) webConfiguration.GetSection("system.web/sessionState");
         }
 
         /// <summary>
@@ -63,7 +62,7 @@ namespace Quintsys.Web.Providers.MongoDBSessionStateStore
             _databaseName = config["databaseName"] ?? DefaultDatabaseName;
             _collectionName = config["collectionName"] ?? DefaultCollectionName;
         }
-        
+
         /// <summary>
         /// Initializes the connection string.
         /// </summary>
@@ -87,7 +86,7 @@ namespace Quintsys.Web.Providers.MongoDBSessionStateStore
         private void InitializeWriteExceptionsToEventLog(NameValueCollection config)
         {
             _writeExceptionsToEventLog = config["writeExceptionsToEventLog"] != null &&
-                                        config["writeExceptionsToEventLog"].ToLower() == "true";
+                                         config["writeExceptionsToEventLog"].ToLower() == "true";
         }
 
         /// <summary>
@@ -150,51 +149,6 @@ namespace Quintsys.Web.Providers.MongoDBSessionStateStore
         }
 
         /// <summary>
-        /// Serialize is called by the SetAndReleaseItemExclusive method to 
-        /// convert the SessionStateItemCollection into a Base64 string to    
-        /// be stored in MongoDB.
-        /// </summary>
-        private static string Serialize(SessionStateItemCollection items)
-        {
-            using (var ms = new MemoryStream())
-            using (var writer = new BinaryWriter(ms))
-            {
-                if (items != null)
-                    items.Serialize(writer);
-
-                writer.Close();
-
-                return Convert.ToBase64String(ms.ToArray());
-            }
-        }
-
-        /// <summary>
-        /// Deserializes the given items into a SessionStateStoreData object.
-        /// </summary>
-        /// <param name="context">The context.</param>
-        /// <param name="serializedItems">The serialized items.</param>
-        /// <param name="timeout">The timeout.</param>
-        /// <returns></returns>
-        private static SessionStateStoreData Deserialize(HttpContext context, string serializedItems, int timeout)
-        {
-            using (var memoryStream = new MemoryStream(Convert.FromBase64String(serializedItems)))
-            {
-                var sessionItems = new SessionStateItemCollection();
-                if (memoryStream.Length > 0)
-                {
-                    using (var reader = new BinaryReader(memoryStream))
-                    {
-                        sessionItems = SessionStateItemCollection.Deserialize(reader);
-                    }
-                }
-
-                var sessionStateStoreData = new SessionStateStoreData(sessionItems,
-                    SessionStateUtility.GetSessionStaticObjects(context), timeout);
-                return sessionStateStoreData;
-            }
-        }
-        
-        /// <summary>
         /// GetSessionStoreItem is called by both the GetItem and 
         /// GetItemExclusive methods. GetSessionStoreItem retrieves the 
         /// session data from the data source. If the lockRecord parameter
@@ -236,9 +190,7 @@ namespace Quintsys.Web.Providers.MongoDBSessionStateStore
                 MongoCollection sessionCollection = GetSessionCollection();
 
                 if (lockRecord)
-                {
                     locked = LockRecordIfNotExpired(sessionCollection, id, utcNow);
-                }
 
                 IMongoQuery query = GetSessionByIdQuery(id);
                 var results = sessionCollection.FindOneAs<BsonDocument>(query);
@@ -255,10 +207,10 @@ namespace Quintsys.Web.Providers.MongoDBSessionStateStore
                         foundRecord = true;
                     }
 
-                    serializedItems = results["Items"].AsString;
                     lockId = results["LockId"].AsInt32;
+                    serializedItems = results["Items"].AsString;
                     lockAge = utcNow.Subtract(results["LockDate"].ToUniversalTime());
-                    actionFlags = (SessionStateActions)results["Flags"].AsInt32;
+                    actionFlags = (SessionStateActions) results["Flags"].AsInt32;
                     timeout = results["Timeout"].AsInt32;
                 }
 
@@ -272,7 +224,9 @@ namespace Quintsys.Web.Providers.MongoDBSessionStateStore
                 {
                     lockId = (int) lockId + 1;
                     SetLockIdAndActionFlag(sessionCollection, lockId, query);
-                    item = GetOrCreateItem(context, actionFlags, serializedItems, timeout);
+                    item = actionFlags == SessionStateActions.InitializeItem 
+                        ? CreateNewStoreData(context, (int) _config.Timeout.TotalMinutes) 
+                        : serializedItems.DeserializeToSessionStateStoreData(context, timeout);
                 }
             }
             catch (Exception exception)
@@ -285,21 +239,6 @@ namespace Quintsys.Web.Providers.MongoDBSessionStateStore
             }
 
             return item;
-        }
-
-        /// <summary>
-        /// Gets the or create item based on the action flag parameter.
-        /// </summary>
-        /// <param name="context">The context.</param>
-        /// <param name="actionFlag">The action flag.</param>
-        /// <param name="serializedItems">The serialized items.</param>
-        /// <param name="timeout">The timeout.</param>
-        /// <returns></returns>
-        private SessionStateStoreData GetOrCreateItem(HttpContext context, SessionStateActions actionFlag, string serializedItems, int timeout)
-        {
-            return actionFlag == SessionStateActions.InitializeItem
-                ? CreateNewStoreData(context, (int) _config.Timeout.TotalMinutes)
-                : Deserialize(context, serializedItems, timeout);
         }
 
         /// <summary>
@@ -355,7 +294,7 @@ namespace Quintsys.Web.Providers.MongoDBSessionStateStore
         {
             return Query.And(Query.EQ("_id", id),
                 Query.EQ("ApplicationName", _applicationName),
-                Query.EQ("LockId", (Int32)lockId));
+                Query.EQ("LockId", (Int32) lockId));
         }
 
         #endregion
@@ -557,15 +496,18 @@ namespace Quintsys.Web.Providers.MongoDBSessionStateStore
         /// <param name="lockId">The lock identifier for the current request.</param>
         /// <param name="newItem">true to identify the session item as a new item; false to identify the session item as an existing item.</param>
         /// <exception cref="System.Configuration.Provider.ProviderException"></exception>
-        public override void SetAndReleaseItemExclusive(HttpContext context, string id, SessionStateStoreData item,
-            object lockId, bool newItem)
+        public override void SetAndReleaseItemExclusive(HttpContext context,
+            string id,
+            SessionStateStoreData item,
+            object lockId,
+            bool newItem)
         {
-            var sessItems = Serialize((SessionStateItemCollection)item.Items);
             var utcNow = DateTime.UtcNow;
             try
             {
-                MongoCollection sessionCollection = GetSessionCollection();
+                var serializedItems = (item.Items as SessionStateItemCollection).Serialize();
 
+                MongoCollection sessionCollection = GetSessionCollection();
                 if (newItem)
                 {
                     var doc = new BsonDocument()
@@ -577,8 +519,8 @@ namespace Quintsys.Web.Providers.MongoDBSessionStateStore
                         .Add("LockId", 0)
                         .Add("Timeout", item.Timeout)
                         .Add("Locked", false)
-                        .Add("Items", sessItems)
-                        .Add("Flags", (int)SessionStateActions.None);
+                        .Add("Items", serializedItems)
+                        .Add("Flags", (int) SessionStateActions.None);
 
                     sessionCollection.Save(doc, _writeConcern);
                 }
@@ -586,7 +528,7 @@ namespace Quintsys.Web.Providers.MongoDBSessionStateStore
                 {
                     var query = GetSessionByIdAndLockIdQuery(id, lockId);
                     var update = Update.Set("Expires", utcNow.AddMinutes(item.Timeout));
-                    update.Set("Items", sessItems);
+                    update.Set("Items", serializedItems);
                     update.Set("Locked", false);
                     sessionCollection.Update(query, update, _writeConcern);
                 }

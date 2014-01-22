@@ -44,9 +44,11 @@
     <Reference Include="System.Web" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Base64StringExtensions.cs" />
     <Compile Include="MongoDBSessionStateStoreProvider.cs" />
     <Compile Include="ExceptionExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SessionStateItemCollectionExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="MongoDBSessionStateStore.1.0.0.nupkg" />
