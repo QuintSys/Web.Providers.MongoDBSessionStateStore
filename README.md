@@ -1,14 +1,13 @@
 Web.Providers.MongoDBSessionStateStore
------------------------------------------------
+======================================
 
-MongoDB Session State Provider
-Custom ASP.NET Session State Provider using MongoDB as the state store.
+MongoDBSessionStateStore is a custom ASP.NET Session State Provider using MongoDB as the state store.
 
 
 Installation
 ------------
 
-To install Quintsys.Web.Providers.MongoDBSessionStateStore, run the following command in the Package Manager Console:
+To install MongoDBSessionStateStore, run the following command in the Package Manager Console:
 
     PM> Install-Package MongoDBSessionStateStore
 
@@ -33,7 +32,7 @@ Example session document:
     }
      
 
-Exception Handling:
+Exception Handling
 ------------------
 
 If the provider encounters an exception when working with the data source, it writes the details of the exception to the Application Event Log instead of returning the exception to the ASP.NET application. This is done as a security measure to avoid private information about the data source from being exposed in the ASP.NET application.
@@ -48,8 +47,8 @@ more: http://stackoverflow.com/questions/1610189/security-exception-when-writtin
 
 
 
-Expired Sessions Cleanup:
--------------------------
+Expired Sessions Cleanup
+------------------------
      
 The session-state store provider does not provide support for the Session_OnEnd event, it does not automatically clean up expired session-item data. It is recommended that you periodically delete expired session information from the data store with the following code.:
 
@@ -59,8 +58,8 @@ more: http://stackoverflow.com/questions/1042881/why-session-end-event-not-raise
 
 
      
-Example web.config settings:
-----------------------------
+Example web.config Settings
+---------------------------
 
     <connectionStrings>
         <add name="MongoDBSessionState" connectionString="mongodb://localhost" />
@@ -91,15 +90,14 @@ Example web.config settings:
     
 
 
-References:
+References
 ----------
 
-http://msdn.microsoft.com/en-us/library/ms178587.aspx
+* [Microsoft - Implementing a Session-State Store Provider] [1]
+* [Microsoft - Sample Session-State Store Provider] [2]
+* [AdaTheDev's MongoDB ASP.NET Session State Store] [3]
 
-http://msdn.microsoft.com/en-us/library/ms178588.aspx
 
-
-
-Based on (read copied a lot from): 
-
-https://github.com/AdaTheDev/MongoDB-ASP.NET-Session-State-Store
+[1]:http://msdn.microsoft.com/en-us/library/ms178587.aspx
+[2]:http://msdn.microsoft.com/en-us/library/ms178588.aspx
+[3]:https://github.com/AdaTheDev/MongoDB-ASP.NET-Session-State-Store
