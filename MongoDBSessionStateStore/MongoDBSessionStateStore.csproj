@@ -54,6 +54,9 @@
     <None Include="MongoDBSessionStateStore.1.0.0.nupkg" />
     <None Include="MongoDBSessionStateStore.1.0.1.nupkg" />
     <None Include="packages.config" />
+    <None Include="Web.config.transform">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
