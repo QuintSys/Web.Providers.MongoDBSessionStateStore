@@ -53,6 +53,8 @@
   <ItemGroup>
     <None Include="MongoDBSessionStateStore.1.0.0.nupkg" />
     <None Include="MongoDBSessionStateStore.1.0.1.nupkg" />
+    <None Include="MongoDBSessionStateStore.1.0.2.nupkg" />
+    <None Include="MongoDBSessionStateStore.1.0.3.nupkg" />
     <None Include="packages.config" />
     <None Include="Web.config.transform">
       <SubType>Designer</SubType>
