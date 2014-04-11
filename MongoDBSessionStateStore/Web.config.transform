@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<configuration>
+  <connectionStrings>
+    <add name="MongoDBSessionState" connectionString="server=127.0.0.1;database=SessionState" />
+  </connectionStrings>
+  <system.web>
+    <sessionState
+        timeout="1440"
+        cookieless="false"
+        mode="Custom"
+        customProvider="MongoSessionStateProvider">
+      <providers>
+        <add name="MongoSessionStateProvider"
+            type="Quintsys.Web.Providers.MongoDBSessionStateStore.MongoDBSessionStateStoreProvider"
+            connectionStringName="MongoDBSessionState"
+            fsync="false"
+            replicasToWrite="0"
+            writeExceptionsToEventLog="false" />
+      </providers>
+    </sessionState>
+  </system.web>
+</configuration>
